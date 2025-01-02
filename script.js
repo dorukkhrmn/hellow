@@ -1,49 +1,82 @@
-// Kullanıcı Puanları
-let points = 0;
-const pointsElement = document.getElementById("points");
-const timerElement = document.getElementById("timer");
-let timerInterval = null;
+document.addEventListener("DOMContentLoaded", () => {
+  const startButton = document.getElementById("startButton");
+  const pointsDisplay = document.getElementById("points");
 
-// Start Farming Fonksiyonu
-function startFarming() {
-  const now = Date.now();
-  const lastClick = localStorage.getItem("lastClick");
-  const eightHours = 8 * 60 * 60 * 1000;
+  document.addEventListener("DOMContentLoaded", () => {
+    const usernameElement = document.querySelector(".username");
+  
+    // Telegram kullanıcı adını buraya bağlayın veya dinamik olarak alın
+    const telegramUsername = "telegram_user"; // Varsayılan kullanıcı adı
+  
+    // Kullanıcı adını güncelle
+    usernameElement.textContent = telegramUsername;
+  
+    // Geri kalan farming sistemi kodu (önceki paylaşılan kod) buraya gelecek
+    // ...
+  });
+  
 
-  if (!lastClick || now - lastClick >= eightHours) {
-    points += 100;
-    pointsElement.textContent = `${points} puan`;
-    localStorage.setItem("lastClick", now);
-    alert("100 puan eklendi!");
-    startTimer(eightHours);
-  } else {
-    const remainingTime = eightHours - (now - lastClick);
-    alert("Sayaç zaten çalışıyor!");
-    startTimer(remainingTime);
-  }
-}
+  // Kullanıcı durumunu depolamak için başlangıç verisi
+  const farmingState = JSON.parse(localStorage.getItem("farmingState")) || {
+    inProgress: false,
+    endTime: null,
+    points: 0,
+    canClaim: false,
+  };
 
-// Sayaç Başlatma
-function startTimer(duration) {
-  clearInterval(timerInterval);
-  let remainingTime = duration;
+  // UI'yi güncelleme fonksiyonu
+  const updateUI = () => {
+    const now = Date.now();
 
-  timerInterval = setInterval(() => {
-    const hours = Math.floor(remainingTime / (60 * 60 * 1000));
-    const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
-    const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
-    timerElement.textContent = `${hours.toString().padStart(2, "0")}:${minutes
-      .toString()
-      .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-
-    if (remainingTime <= 0) {
-      clearInterval(timerInterval);
-      timerElement.textContent = "00:00:00";
+    // Eğer claim hakkı varsa
+    if (farmingState.canClaim) {
+      startButton.textContent = "Claim";
+      startButton.disabled = false;
+    } 
+    // Eğer sayaç aktifse ve zaman dolmamışsa
+    else if (farmingState.inProgress && farmingState.endTime > now) {
+      const timeLeft = Math.ceil((farmingState.endTime - now) / 1000);
+      startButton.textContent = `Time Left: ${timeLeft}s`;
+      startButton.disabled = true;
+      setTimeout(updateUI, 1000); // 1 saniye sonra güncelle
+    } 
+    // Sayaç tamamlanmış ancak claim yapılmamışsa
+    else if (farmingState.inProgress) {
+      farmingState.inProgress = false;
+      farmingState.canClaim = true;
+      startButton.textContent = "Claim";
+      startButton.disabled = false;
+      localStorage.setItem("farmingState", JSON.stringify(farmingState));
+    } 
+    // Başlangıç durumu
+    else {
+      startButton.textContent = "Start Farming";
+      startButton.disabled = false;
     }
 
-    remainingTime -= 1000;
-  }, 1000);
-}
+    // Puanları güncelle
+    pointsDisplay.textContent = `${farmingState.points} $DUAL`;
+  };
 
-// Firebase veya Supabase Entegrasyonu Burada Yapılabilir
-// (Eğer bağlanmasını isterseniz size yardımcı olabilirim.)
+  // Buton tıklama işlevi
+  startButton.addEventListener("click", () => {
+    if (farmingState.canClaim) {
+      // Claim işlemi
+      farmingState.points += 100; // 100 puan ekle
+      farmingState.canClaim = false;
+      localStorage.setItem("farmingState", JSON.stringify(farmingState));
+      updateUI();
+    } else if (!farmingState.inProgress) {
+      // Sayaç başlat
+      farmingState.inProgress = true;
+      farmingState.endTime = Date.now() + 8000; // Sayaç süresi: 8 saniye
+      farmingState.canClaim = false;
+      startButton.disabled = true;
+      localStorage.setItem("farmingState", JSON.stringify(farmingState));
+      updateUI();
+    }
+  });
+
+  // Sayfa yüklendiğinde UI'yi güncelle
+  updateUI();
+});
