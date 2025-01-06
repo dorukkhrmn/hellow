@@ -1,0 +1,44 @@
+/* Market Sayfası */
+.market-container {
+  padding: 15px;
+}
+
+.market-title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.vip-card {
+  background: linear-gradient(135deg, #e0e0e0, #ffffff);
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.vip-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.vip-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+.vip-price {
+  font-size: 18px;
+  color: #666;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid black;
+  margin: 15px 0;
+}
