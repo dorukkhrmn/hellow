@@ -94,33 +94,42 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 document.addEventListener("DOMContentLoaded", () => {
-  const connectButton = document.getElementById("connectButton");
+  const buyButtons = document.querySelectorAll(".buy-button");
 
-  connectButton.addEventListener("click", async () => {
+  const sendTelegramStarsRequest = async () => {
+    const botToken = "7599852928:AAE0AgC-Li0hnqiBhK_J-G7aN259hVfoUBo"; // Botunuzun token'ını buraya ekleyin
+    const chatId = "6499684844"; // Yıldız isteyeceğiniz kullanıcının chat ID'si
+    const starsAmount = 50; // İstenilecek yıldız sayısı
+
+    const message = `Please send ${starsAmount} stars to complete the purchase.`;
+
     try {
-      const TonConnect = await import("https://cdn.jsdelivr.net/npm/@tonconnect/sdk@0.3.0/dist/sdk.umd.min.js");
-      const tonConnect = new TonConnect.TonConnect({
-        manifestUrl: "https://dorukkhrmn.github.io/hellow/tonconnect-manifest.json",
+      // Telegram mesaj gönderme isteği
+      const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: message,
+        }),
       });
 
-      // Kullanıcıdan cüzdan seçimi alın
-      const wallets = await tonConnect.getWallets();
-      if (wallets.length === 0) {
-        alert("No wallets found. Please install TON Wallet or Tonkeeper.");
-        return;
+      if (response.ok) {
+        alert("Request sent successfully. Please complete the transaction.");
+      } else {
+        alert("Failed to send Telegram request. Check your bot token and chat ID.");
       }
-
-      // Cüzdan seçme ve bağlama işlemi
-      tonConnect.connect({ universalLink: wallets[0].universalLink, bridgeUrl: wallets[0].bridgeUrl });
-
-      tonConnect.onStatusChange((status) => {
-        if (status === TonConnect.ConnectionStatus.READY) {
-          alert("Wallet connected successfully!");
-        }
-      });
     } catch (error) {
-      console.error("Error connecting wallet:", error);
-      alert("Failed to connect wallet. Check your manifest URL and wallet status.");
+      console.error("Error sending Telegram request:", error);
+      alert("An error occurred while sending the Telegram request.");
     }
+  };
+
+  buyButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      sendTelegramStarsRequest();
+    });
   });
 });
