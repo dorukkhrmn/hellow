@@ -1,44 +1,42 @@
 body {
-  background-color: #000;
-  color: #fff;
-  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin: 0;
+  background-color: black;
+  color: white;
+  font-family: Arial, sans-serif;
 }
 
-.container {
+.wallet-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
+  width: 100%;
 }
 
-.card {
-  background-color: #1a1a1a;
-  padding: 20px 40px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+.wallet-card {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 8px;
   text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.connect-btn {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
+.connect-button {
+  background-color: #007aff;
+  color: white;
   padding: 10px 20px;
-  border-radius: 5px;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-}
-
-.connect-btn:hover {
-  background-color: #0056b3;
-}
-
-.status-text {
   margin-top: 10px;
-  font-size: 14px;
+}
+
+.connect-button:hover {
+  background-color: #005bb5;
 }
