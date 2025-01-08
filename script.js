@@ -133,3 +133,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+function buyStars() {
+  // Telegram Mini App API'si üzerinden ödeme ekranını aç
+  Telegram.WebApp.payInvoice({
+    name: "500 Stars Needed",
+    description: "Purchase stars to use in the market",
+    prices: [
+      { label: "Stars", amount: 50000 }, // 500 Stars
+    ],
+    currency: "USD", // Ödeme birimi
+    payload: "unique_payload_identifier", // Fatura için benzersiz bir kimlik
+  })
+    .then(() => {
+      alert("Payment successful!");
+      // Burada yıldız miktarını güncelleyebilirsiniz
+    })
+    .catch((error) => {
+      console.error("Payment failed:", error);
+      alert("Payment failed. Please try again.");
+    });
+}
+
