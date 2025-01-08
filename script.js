@@ -94,28 +94,33 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 document.addEventListener("DOMContentLoaded", () => {
-  // TON Connect SDK'yı başlat
-  const tonConnect = new TonConnect({
-    manifestUrl: 'https://your-domain.com/tonconnect-manifest.json', // Manifest URL buraya gelecek
-  });
+  const connectButton = document.getElementById("connectButton");
 
-  const connectButton = document.getElementById('connectButton');
-  const walletStatus = document.getElementById('walletStatus');
-
-  // "Connect Wallet" butonuna tıklama işlevi
-  connectButton.addEventListener('click', async () => {
+  connectButton.addEventListener("click", async () => {
     try {
-      // Kullanıcıya cüzdan seçimi ekranını göster
-      await tonConnect.connectWallet();
+      const TonConnect = await import("https://cdn.jsdelivr.net/npm/@tonconnect/sdk@0.3.0/dist/sdk.umd.min.js");
+      const tonConnect = new TonConnect.TonConnect({
+        manifestUrl: "https://dorukkhrmn.github.io/hellow/tonconnect-manifest.json",
+      });
 
-      // Bağlantı başarılıysa durumu güncelle
-      const wallet = tonConnect.wallet;
-      walletStatus.textContent = `Connected: ${wallet.name}`;
-      alert("Wallet connected successfully!");
+      // Kullanıcıdan cüzdan seçimi alın
+      const wallets = await tonConnect.getWallets();
+      if (wallets.length === 0) {
+        alert("No wallets found. Please install TON Wallet or Tonkeeper.");
+        return;
+      }
+
+      // Cüzdan seçme ve bağlama işlemi
+      tonConnect.connect({ universalLink: wallets[0].universalLink, bridgeUrl: wallets[0].bridgeUrl });
+
+      tonConnect.onStatusChange((status) => {
+        if (status === TonConnect.ConnectionStatus.READY) {
+          alert("Wallet connected successfully!");
+        }
+      });
     } catch (error) {
-      console.error("Wallet connection failed:", error);
-      walletStatus.textContent = "Connection Failed. Try Again.";
+      console.error("Error connecting wallet:", error);
+      alert("Failed to connect wallet. Check your manifest URL and wallet status.");
     }
   });
 });
-
